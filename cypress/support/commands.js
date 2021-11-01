@@ -29,3 +29,33 @@ Cypress.Commands.add('ClearTelaLogin',()=>{
     cy.get('[data-test="email"]').clear()
     cy.get('[data-test="passwd"]').clear()
 })
+
+Cypress.Commands.add('LoginSucesso',(emailUsuario,senhaUsuario)=>{
+    // Insere dados
+    cy.get('[data-test="email"]').type(emailUsuario)
+    cy.get('[data-test="passwd"]').type(senhaUsuario)
+
+    // Clique
+    cy.get('[type="submit"]').click()
+
+    cy.VerificaMenssagemDoSistema('Bem vindo, Guilherme!')
+
+})
+
+Cypress.Commands.add('LogoutSucesso',()=>{
+    // Clica na Engrenagem
+    cy.get('.fas.fa-cog').click()
+
+    // Clica na Opção Sair
+    cy.get('[href="/logout"]').click()
+
+    cy.VerificaMenssagemDoSistema('Até Logo!')
+})
+
+Cypress.Commands.add('VerificaMenssagemDoSistema',(mensagem)=>{
+    // Verifica mensagem
+    cy.get('.toast-message').should('have.text',mensagem)
+    cy.get('.toast-close-button').click()
+})
+
+

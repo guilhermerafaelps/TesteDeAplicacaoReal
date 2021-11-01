@@ -9,77 +9,91 @@ describe('Aplicação Real',()=>{
         })
     })
 
-    describe("#01 - Métodos de Login/Logout",()=>{
+    describe("#01 - Login/Logout",()=>{
 
-        it('#00 - Login sem informar dados',function(){
+        it('#01 - Login sem informar dados',function(){
             // Clique
             cy.get('[type="submit"]').click()
-    
-            // Verifica mensagem
-            cy.get('.toast-message').should('have.text','Bem vindo, !')
-            cy.get('.toast-close-button').click()
+
+            cy.VerificaMenssagemDoSistema('Bem vindo, !')
         })
 
-        it('#01 - Login apenas com e-mail',function(){
+        it('#02 - Login apenas com e-mail',function(){
 
             // Insere dados
             cy.get('[data-test="email"]').type(this.dado.email)
 
             // Clique
             cy.get('[type="submit"]').click()
-    
-            // Verifica mensagem
-            cy.get('.toast-message').should('have.text','Erro: Error: Request failed with status code 401')
-            cy.get('.toast-close-button').click()
+
+            // Verifica a mensagem
+            cy.VerificaMenssagemDoSistema('Erro: Error: Request failed with status code 401')
 
             // Limpa Campos
             cy.ClearTelaLogin()
         })
 
-        it('#02 - Login apenas com senha',function(){
+        it('#03 - Login apenas com senha',function(){
 
             // Insere dados
             cy.get('[data-test="passwd"]').type(this.dado.senha)
 
             // Clique
             cy.get('[type="submit"]').click()
-    
-            // Verifica mensagem
-            cy.get('.toast-message').should('have.text','Erro: Error: Request failed with status code 401')
-            cy.get('.toast-close-button').click()
+
+            // Verifica a mensagem
+            cy.VerificaMenssagemDoSistema('Erro: Error: Request failed with status code 401')
 
             // Limpa Campos
             cy.ClearTelaLogin()
         })
 
-        it('#03 - Login com sucesso',function(){
-    
-            // Insere dados
-            cy.get('[data-test="email"]').type(this.dado.email)
-            cy.get('[data-test="passwd"]').type(this.dado.senha)
-    
-            // Clique
-            cy.get('[type="submit"]').click()
-    
-            // Verifica mensagem
-            cy.get('.toast-message').should('have.text','Bem vindo, Guilherme!')
-            cy.get('.toast-close-button').click()
+        it('#04 - Login com sucesso',function(){
+            cy.LoginSucesso(this.dado.email,this.dado.senha)
         })
     
-        it('#04 - Logout com sucesso',function(){
-    
-            // Clica na Engrenagem
-            cy.get('.fas.fa-cog').click()
-    
-            // Clica na Opção Sair
-            cy.get('[href="/logout"]').click()
-    
-            // Verifica mensagem (REAL)
-            cy.get('.toast-message').should('have.text','Até Logo!')
-            cy.get('.toast-close-button').click()
-            
-            // Verifica
-            // cy.get('.toast-message').should('have.text','Até Logo!Bem vindo, Guilherme!')
+        it('#05 - Logout com sucesso',function(){
+            cy.LogoutSucesso()
         })
     })  
+
+    describe.only("#02 - Gerenciar Contas",()=>{
+
+        before(function(){
+            cy.LoginSucesso(this.dado.email,this.dado.senha)
+        })
+
+        it.skip('#01 - Inserir uma conta',()=>{
+            // Engrenagem
+            cy.get('.fas.fa-cog').click()
+            // Contas
+            cy.get('[href="/contas"]').click()
+
+            // Insere a conta e salva
+            cy.get('[class="form-control"]').type('Conta da TIM')
+            cy.get('[class="btn btn-primary btn-block"]').click()
+
+            // Verifica a mensagem
+            cy.VerificaMenssagemDoSistema('Conta inserida com sucesso!')
+
+            cy.get('.table>tbody :nth-child(1) > td').should('have.text','Conta da TIM | ')
+        })
+
+        it('#02 - Inserir conta repetida',()=>{
+            // Engrenagem
+            cy.get('.fas.fa-cog').click()
+            // Contas
+            cy.get('[href="/contas"]').click()
+
+            // Insere a conta e salva
+            cy.get('[class="form-control"]').type('Conta da TIM')
+            cy.get('[class="btn btn-primary btn-block"]').click()
+
+            // Verifica a mensagem
+            cy.VerificaMenssagemDoSistema('Erro: Error: Request failed with status code 400')
+
+        })
+
+    })  
+
 })
